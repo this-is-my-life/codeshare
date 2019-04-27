@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title></title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/atom-one-dark.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.1/css/all.css" integrity="sha384-O8whS3fhG2OnA5Kas0Y9l3cfpmYjapjI0E4theH4iuMD+pLhbf6JI0jIMfYcK3yZ" crossorigin="anonymous">
+    <style>
+      body {
+        background-color: #282c34;
+      }
+      code {
+        height: 100%;
+        width: 100%;
+      }
+      .navbar {
+        background-color: #282c34;
+      }
+    </style>
+  </head>
+  <body>
+      <div class="pos-f-t">
+          <div class="collapse" id="info">
+            <div class="bg-dark p-4">
+              <h5 class="text-white h4" id="url">Loading Url...</h5>
+              <span class="text-muted" id="description">Loading Description...</span>
+            </div>
+          </div>
+          <nav class="navbar">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#info">
+              <span class="navbar-toggler-icon"><i class="fas fa-chevron-down text-white"></i></span>
+            </button>
+            <div class="text-right">
+                <span class="text-muted" id="docInfo">..</span>
+            </div>
+          </nav>
+        </div>
+    <pre><code class="" id="render"></code></pre>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.1.1/js/all.js" integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a" crossorigin="anonymous"></script>
+    <script>
+        let id = document.location.pathname.split('/')[1]
+        if (!id || id === 'index.html') {
+          document.location.href = 'http://edit.codeshare.kro.kr'
+        } else {
+          let xhr = new XMLHttpRequest()
+          let target = 'https://api.myjson.com/bins/dndn0'
+          xhr.open('GET', target)
+          xhr.send()
+  
+          xhr.onreadystatechange = function() {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+              if (xhr.status == 200) {
+                let list = JSON.parse(xhr.responseText)
+                if (!list[id]) {
+                  list[id] = {
+                    description: 'Please, dubble-check your url or internet connection',
+                    language: 'plantext',
+                    text: 'Error: 404 Not Found.\n삐빅, 없는 문서! 링크를 다시 살펴보세요'
+                  }
+                }
+                document.getElementById('url').innerText = document.location.href
+                document.getElementById('description').innerText = list[id].description
+                document.getElementById('docInfo').innerHTML = '<b>' + list[id].language.toUpperCase() + '</b> | <b>' + list[id].text.byteLength() + '</b> Bytes | <b>' + list[id].text.split('\n').length + '</b> lines | <b>' + list[id].text.split('').length + '</b> characters | Created at <b>' + new Date(list[id].createdAt).getFullYear() + '/' + new Date(list[id].createdAt).getMonth() + '/' + new Date(list[id].createdAt).getDate() + '<b/> <button type="button" class="btn"><i class="fas fa-edit text-white" onclick="move2Edit()"></i></button>'
+                document.getElementById('render').classList.add(list[id].language)
+                document.getElementById('render').innerText = list[id].text
+                hljs.highlightBlock(document.getElementById('render'))
+              }
+            }
+          }
+        }
+
+        function move2Edit () {
+          document.location.href = 'http://edit.codeshare.kro.kr/' + document.location.pathname.split('/')[1]
+        }
+
+        /**
+         * 문자열의 바이트수 리턴
+         * @returns {Number}
+         */
+        String.prototype.byteLength = function() {
+            let l = 0
+            
+            for(let idx = 0; idx < this.length; idx++) {
+                let c = escape(this.charAt(idx))
+                
+                if( c.length === 1 ) l ++
+                else if( c.indexOf("%u") != -1 ) l += 2
+                else if( c.indexOf("%") != -1 ) l += c.length / 3
+            }
+            
+            return l
+        }
+    </script>
+  </body>
+</html>
