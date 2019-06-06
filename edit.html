@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>PMH Studio Code Share Service</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.1/css/all.css" integrity="sha384-O8whS3fhG2OnA5Kas0Y9l3cfpmYjapjI0E4theH4iuMD+pLhbf6JI0jIMfYcK3yZ" crossorigin="anonymous">
+
+    <style>
+    body {
+      background-color: #343a40;
+    }
+
+    #description {
+      resize: none;
+    }
+
+    #code {
+      min-height: 50px;
+    }
+    </style>
+  </head>
+  <body>
+    <div id="render">
+        <div class="jumbotron rounded-bottom bg-dark text-white">
+            <h1>PMH Studio Code Share Service</h1>
+            <hr />
+            <label for="url">Code Share URL ※ 한쿡어 잘되염</label>
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="short-module">http://codeshare.kro.kr/</span>
+              </div>
+              <input type="text" class="form-control" id="url" placeholder="ex) example">
+              <div class="input-group-append">
+                  <button type="button" class="btn btn-secondary input-group-text" onclick="random()"><i class="fas fa-dice"></i></button>
+              </div>
+            </div>
+            <label for="description">Code Description (설명)</label>
+            <div class="input-group mb-3">
+              <textarea class="form-control" id="description" placeholder="ex) HTML Code For pmhstudio.kro.kr"></textarea>
+            </div>
+            <label for="language">Code Language (언어)</label>
+            <div class="input-group mb-3">
+              <select class="form-control" id="language">
+                <option value="apache">Apache</option>
+                <option value="bash">Bash</option>
+                <option value="cs">C#</option>
+                <option value="cpp">C++</option>
+                <option value="css">CSS</option>
+                <option value="coffee">CoffeeScript</option>
+                <option value="diff">Diff</option>
+                <option value="html">HTML/XML</option>
+                <option value="http">HTTP</option>
+                <option value="ini">Ini/TOML</option>
+                <option value="json">JSON</option>
+                <option value="java">Java</option>
+                <option value="js">JavaScript</option>
+                <option value="mk">Makefile</option>
+                <option value="md">Markdown</option>
+                <option value="nginx">Nginx</option>
+                <option value="obj-c">Objective C</option>
+                <option value="php">PHP</option>
+                <option value="pm">Perl</option>
+                <option value="properties">Properties</option>
+                <option value="py">Python</option>
+                <option value="rb">Ruby</option>
+                <option value="sql">SQL</option>
+                <option value="shell">Shell Session</option>
+              </select>
+            </div>
+            <label for="code">Full Code (코드)</label>
+            <div class="input-group mb-3">
+                <textarea onkeydown="resize(this)" onkeyup="resize(this)" class="form-control" id="code" placeholder="ex) console.log('Hello, world!')"></textarea>
+            </div>
+            <hr />
+            <button class="btn btn-primary" onclick="share()">CodeShare <i class="fas fa-chevron-right"></i></button>　 Total <b id="codeCount">(Caculating...)</b> Codes
+      </div>
+    </div>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.1.1/js/all.js" integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a" crossorigin="anonymous"></script>
+    <script>
+    let xhr = new XMLHttpRequest()
+    let target = 'http://api.myjson.com/bins/dndn0'
+    xhr.open('GET', target)
+    xhr.send()
+
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === XMLHttpRequest.DONE) {
+        if (xhr.status == 200) {
+          let list = JSON.parse(xhr.responseText)
+          document.getElementById("codeCount").innerHTML = Object.keys(list).length
+        }
+      }
+    }
+
+      function random () {
+        let result = '', max = Math.floor(Math.random() * 3) + 5;
+        for (let counter = 0; counter < max; counter++) {
+          result += String.fromCharCode(Math.floor(Math.random() * (0xD7AF - 0xAC00 + 1)) + 0xAC00)
+        }
+        document.getElementById('url').value = result
+      }
+
+      function resize (obj) {
+        obj.style.height = '1px';
+        obj.style.height = (12 + obj.scrollHeight) + 'px';
+      }
+      
+      function share () {
+        let url = encodeURI(document.getElementById('url').value)
+        let description = document.getElementById('description').value
+        let language = document.getElementById('language').value
+        let code = document.getElementById('code').value
+        if (!url || !description || !language || !code) {
+          alert('Error: Fill All Blanks\n모든 빈칸을 채워주세요')
+        } else {
+          let xhr = new XMLHttpRequest()
+          let target = 'http://api.myjson.com/bins/dndn0'
+          xhr.open('GET', target)
+          xhr.send()
+    
+          xhr.onreadystatechange = function() {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+              if (xhr.status == 200) {
+                let list = JSON.parse(xhr.responseText)
+                list[url] = {
+                  description: encodeURI(description),
+                  language: language,
+                  text: encodeURI(code),
+                  createdAt: Date.now()
+                }
+                let xhrp = new XMLHttpRequest()
+                  xhrp.open('PUT', 'http://api.myjson.com/bins/dndn0')
+                  xhrp.setRequestHeader('Content-Type', 'application/json')
+                  xhrp.send(JSON.stringify(list))
+                  document.location.href = 'http://codeshare.kro.kr/' + decodeURI(url)
+              }
+            }
+          }
+        }
+      }
+
+    </script>
+  </body>
+</html>

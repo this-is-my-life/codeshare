@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <title></title>
+      <title>PMH Studio Code Share Service</title>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -55,7 +55,7 @@
           document.location.href = 'http://edit.codeshare.kro.kr'
         } else {
           let xhr = new XMLHttpRequest()
-          let target = 'https://api.myjson.com/bins/dndn0'
+          let target = 'http://api.myjson.com/bins/dndn0'
           xhr.open('GET', target)
           xhr.send()
   
@@ -65,16 +65,16 @@
                 let list = JSON.parse(xhr.responseText)
                 if (!list[id]) {
                   list[id] = {
-                    description: 'Please, dubble-check your url or internet connection',
+                    description: encodeURI('Please, dubble-check your url or internet connection'),
                     language: 'plantext',
-                    text: 'Error: 404 Not Found.\n삐빅, 없는 문서! 링크를 다시 살펴보세요'
+                    text: encodeURI('Error: 404 Not Found.\n삐빅, 없는 문서! 링크를 다시 살펴보세요')
                   }
                 }
-                document.getElementById('url').innerText = document.location.href
-                document.getElementById('description').innerText = list[id].description
+                document.getElementById('url').innerText = decodeURI(document.location.href)
+                document.getElementById('description').innerText = decodeURI(list[id].description)
                 document.getElementById('docInfo').innerHTML = '<b>' + list[id].language.toUpperCase() + '</b> | <b>' + list[id].text.byteLength() + '</b> Bytes | <b>' + list[id].text.split('\n').length + '</b> lines | <b>' + list[id].text.split('').length + '</b> characters | Created at <b>' + new Date(list[id].createdAt).getFullYear() + '/' + new Date(list[id].createdAt).getMonth() + '/' + new Date(list[id].createdAt).getDate() + '<b/> <button type="button" class="btn"><i class="fas fa-edit text-white" onclick="move2Edit()"></i></button>'
                 document.getElementById('render').classList.add(list[id].language)
-                document.getElementById('render').innerText = list[id].text
+                document.getElementById('render').innerText = decodeURI(list[id].text)
                 hljs.highlightBlock(document.getElementById('render'))
               }
             }
